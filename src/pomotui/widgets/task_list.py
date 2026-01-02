@@ -27,7 +27,6 @@ class TaskItem(Static):
     TaskItem:hover {
         border: solid $accent;
         background: $panel-lighten-1;
-        cursor: pointer;
     }
 
     TaskItem.selected {
