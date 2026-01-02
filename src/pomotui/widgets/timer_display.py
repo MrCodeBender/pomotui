@@ -75,7 +75,7 @@ class TimerDisplay(Widget):
                 f"🍅 Completed: {self.pomodoros_completed}", classes="pomodoros-count"
             )
             yield Static(
-                "[Space] Start/Pause  [R] Reset  [N] Next  [T] Task  [S] Stats  [Ctrl+\\] Palette  [Q] Quit",
+                "[Space] Start/Pause  [R] Reset  [N] Next  [T] Task  [S] Stats  [M] Sound  [Q] Quit",
                 classes="controls-hint"
             )
 

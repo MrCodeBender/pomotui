@@ -9,9 +9,10 @@ A modern, feature-rich Pomodoro timer for the terminal, built with [Textual](htt
 - **📊 Statistics & Reports**: Detailed daily, weekly, and monthly productivity analytics
 - **💾 Data Export**: Export your productivity data to CSV or JSON formats
 - **🎨 Theme Persistence**: Customize your terminal theme and save your preference
+- **🔔 Sound Notifications**: Terminal bell notifications for session completion (toggle on/off)
 - **⌨️ Keyboard-Driven**: Efficient keyboard shortcuts for all actions
 - **🗂️ SQLite Storage**: Reliable local database for all your data
-- **🧪 Well-Tested**: 60+ tests ensuring reliability
+- **🧪 Well-Tested**: 67 tests ensuring reliability
 
 ## 📸 Preview
 
@@ -25,7 +26,7 @@ A modern, feature-rich Pomodoro timer for the terminal, built with [Textual](htt
 │              🍅 Completed: 3                            │
 │                                                         │
 │  [Space] Start/Pause  [R] Reset  [N] Next             │
-│  [T] Task  [S] Stats  [Ctrl+\] Palette  [Q] Quit      │
+│  [T] Task  [S] Stats  [M] Sound  [Q] Quit             │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -84,6 +85,7 @@ pomotui
 | `N` | Next Session | Skip to the next session (work → break → work) |
 | `T` | New Task | Open the task creation dialog |
 | `S` | Statistics | View your productivity statistics |
+| `M` | Toggle Sound | Enable or disable sound notifications |
 | `Ctrl+\` | Command Palette | Open Textual's command palette (theme selection, etc.) |
 | `ESC` | Back | Return to the main screen from any modal |
 | `Q` | Quit | Exit the application |
@@ -92,9 +94,10 @@ pomotui
 
 1. **Start a Pomodoro**: Press `Space` to start your first work session (25 minutes)
 2. **Create Tasks** (optional): Press `T` to create a task and associate your work
-3. **Take Breaks**: After 25 minutes, the app will notify you. Press `N` to start a break
+3. **Take Breaks**: After 25 minutes, you'll hear a notification (triple bell). Press `N` to start a break
 4. **Track Progress**: Press `S` anytime to view your statistics and productivity trends
 5. **Customize Theme**: Press `Ctrl+\` and select your preferred theme (persists across sessions)
+6. **Toggle Sound**: Press `M` to enable/disable sound notifications (preference saved)
 
 ## 📊 Statistics & Reports
 
@@ -238,8 +241,8 @@ Please ensure:
 - [x] Statistics and analytics
 - [x] Data export (CSV/JSON)
 - [x] Theme persistence
-- [x] Comprehensive test coverage
-- [ ] Sound notifications
+- [x] Sound notifications (terminal bell)
+- [x] Comprehensive test coverage (67 tests)
 - [ ] Custom timer durations (UI for configuration)
 - [ ] Task editing and deletion
 - [ ] More detailed task analytics

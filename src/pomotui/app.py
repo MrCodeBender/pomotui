@@ -9,6 +9,7 @@ from textual.widgets import Header, Footer
 
 from pomotui.database import DatabaseManager
 from pomotui.models import TimerConfig, Task
+from pomotui.notifications import SoundNotificationManager
 from pomotui.screens import TaskScreen, StatsScreen
 from pomotui.timer import PomodoroTimer, TimerState, SessionType
 from pomotui.widgets import TimerDisplay, TaskList
@@ -43,6 +44,7 @@ class PomodoroApp(App):
         ("n", "next_session", "Next Session"),
         ("t", "new_task", "New Task"),
         ("s", "show_stats", "Statistics"),
+        ("m", "toggle_sound", "Toggle Sound"),
         ("q", "quit", "Quit"),
     ]
 
@@ -63,6 +65,10 @@ class PomodoroApp(App):
         # Database
         self.db = DatabaseManager()
         self.current_task: Optional[Task] = None
+
+        # Sound notifications
+        self.sound_manager = SoundNotificationManager(self)
+        self._load_sound_preference()
 
         # Load theme preference
         self._load_theme_preference()
@@ -163,6 +169,12 @@ class PomodoroApp(App):
             if self.current_task and self.current_task.id == task_id:
                 self.current_task.increment_pomodoros()
 
+        # Play sound notification
+        if session_type == SessionType.WORK:
+            self.sound_manager.play_work_complete()
+        else:
+            self.sound_manager.play_break_complete()
+
         self.notify(
             f"Session complete! Good job! 🎉",
             title=f"{session_type.value.replace('_', ' ').title()} Finished",
@@ -204,6 +216,29 @@ class PomodoroApp(App):
     def _save_theme_preference(self) -> None:
         """Save current theme to database."""
         self.db.set_setting("theme", self.theme)
+
+    def _load_sound_preference(self) -> None:
+        """Load sound notification preference from database."""
+        sound_enabled = self.db.get_setting("sound_enabled")
+        if sound_enabled == "false":
+            self.sound_manager.disable()
+        else:
+            # Default is enabled
+            self.sound_manager.enable()
+
+    def _save_sound_preference(self) -> None:
+        """Save sound notification preference to database."""
+        self.db.set_setting("sound_enabled", "true" if self.sound_manager.is_enabled() else "false")
+
+    def action_toggle_sound(self) -> None:
+        """Toggle sound notifications on/off."""
+        if self.sound_manager.is_enabled():
+            self.sound_manager.disable()
+            self.notify("Sound notifications disabled", severity="information")
+        else:
+            self.sound_manager.enable()
+            self.notify("Sound notifications enabled", severity="information")
+        self._save_sound_preference()
 
 
 if __name__ == "__main__":

@@ -10,8 +10,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ Statistics and reports (daily/weekly/monthly)
 - ✅ Data export (CSV/JSON)
 - ✅ Theme persistence (Textual themes)
+- ✅ Sound notifications (terminal bell with toggle)
 - ✅ Intuitive navigation with ESC key support
-- 🔲 Sound notifications (planned)
 
 ## Technology Stack
 
@@ -19,8 +19,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Package Manager**: uv (fast, modern Python package manager)
 - **Database**: SQLite with standard library (sqlite3)
 - **Storage Location**: `~/.config/pomotui/pomotui.db`
-- **Testing**: pytest with 60 tests passing
+- **Testing**: pytest with 67 tests passing
 - **Code Quality**: mypy, ruff for linting and formatting
+- **Sound**: Textual's built-in bell (no external dependencies)
 
 ## Development Commands
 
@@ -97,6 +98,9 @@ pomotui/
 │   │   ├── __init__.py
 │   │   ├── schema.py        # Database schema and initialization
 │   │   └── manager.py       # DatabaseManager class (CRUD operations)
+│   ├── notifications/
+│   │   ├── __init__.py
+│   │   └── sound.py         # SoundNotificationManager
 │   └── timer/
 │       ├── __init__.py
 │       ├── state.py         # TimerState and SessionType enums
@@ -105,6 +109,7 @@ pomotui/
 │   ├── test_app.py          # App integration tests
 │   ├── test_database.py     # Database CRUD tests
 │   ├── test_models.py       # Model tests (TimerConfig)
+│   ├── test_sound_notifications.py  # Sound notification tests
 │   ├── test_statistics.py   # Statistics calculation tests
 │   ├── test_task.py         # Task/Session model tests
 │   ├── test_theme_persistence.py  # Theme persistence tests
@@ -223,20 +228,24 @@ CREATE TABLE settings (
 - Consistent back button in all screens
 - Command palette (Ctrl+\) for theme selection
 
-#### 🔲 Sound Notifications (Planned)
-- Play notification sounds on session completion
-- Configurable sound preferences
-- Non-blocking audio playback
+#### ✅ Sound Notifications
+- **Location**: `notifications/sound.py`
+- Terminal bell notifications using Textual's built-in `app.bell()` method
+- Different patterns for work complete (3 bells) vs break complete (1 bell)
+- Toggle on/off with M key (preference saved to database)
+- No external dependencies required
+- Works across all platforms (Windows, macOS, Linux)
 
 ## Testing Strategy
 
-**Current Status**: 60 tests passing ✅
+**Current Status**: 67 tests passing ✅
 
 ### Test Coverage
 - **Timer tests** (test_timer.py): 18 tests for state machine, transitions, callbacks
 - **Database tests** (test_database.py): 16 tests for CRUD operations, settings
 - **Statistics tests** (test_statistics.py): 12 tests for daily/weekly/monthly calculations
 - **Task model tests** (test_task.py): 10 tests for Task/Session models
+- **Sound tests** (test_sound_notifications.py): 7 tests for sound notification manager
 - **App tests** (test_app.py): 2 integration tests
 - **Theme tests** (test_theme_persistence.py): 2 tests for theme persistence
 
@@ -270,6 +279,7 @@ uv run pytest -v
 | N | Next Session | Skip to next session (break/work) |
 | T | New Task | Open task creation screen |
 | S | Statistics | Open statistics screen |
+| M | Toggle Sound | Enable/disable sound notifications |
 | Ctrl+\ | Command Palette | Open Textual command palette (theme selection) |
 | ESC | Back | Return to main screen (from modals) |
 | Q | Quit | Exit application |
