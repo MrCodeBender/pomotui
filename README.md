@@ -5,14 +5,16 @@ A modern, feature-rich Pomodoro timer for the terminal, built with [Textual](htt
 ## ✨ Features
 
 - **⏱️ Full Pomodoro Timer**: Classic 25/5/15 minute work/break cycles with visual progress
-- **📋 Task Management**: Create and track tasks, associate pomodoros with your work
+- **📋 Task Management**: Create, select, and track tasks with click-to-select interface
+- **👁️ Active Task Display**: See which task you're working on during focus sessions
+- **💾 Task Persistence**: Your selected task is remembered across app restarts
 - **📊 Statistics & Reports**: Detailed daily, weekly, and monthly productivity analytics
-- **💾 Data Export**: Export your productivity data to CSV or JSON formats
+- **📤 Data Export**: Export your productivity data to CSV or JSON formats
 - **🎨 Theme Persistence**: Customize your terminal theme and save your preference
 - **🔔 Sound Notifications**: Terminal bell notifications for session completion (toggle on/off)
 - **⌨️ Keyboard-Driven**: Efficient keyboard shortcuts for all actions
 - **🗂️ SQLite Storage**: Reliable local database for all your data
-- **🧪 Well-Tested**: 67 tests ensuring reliability
+- **🧪 Well-Tested**: 70 tests ensuring reliability
 
 ## 📸 Preview
 
@@ -92,12 +94,14 @@ pomotui
 
 ### Workflow
 
-1. **Start a Pomodoro**: Press `Space` to start your first work session (25 minutes)
-2. **Create Tasks** (optional): Press `T` to create a task and associate your work
-3. **Take Breaks**: After 25 minutes, you'll hear a notification (triple bell). Press `N` to start a break
-4. **Track Progress**: Press `S` anytime to view your statistics and productivity trends
-5. **Customize Theme**: Press `Ctrl+\` and select your preferred theme (persists across sessions)
-6. **Toggle Sound**: Press `M` to enable/disable sound notifications (preference saved)
+1. **Create a Task**: Press `T` to create a task (e.g., "Write documentation")
+2. **Select Task**: Click on a task in the task list to select it as your current focus
+3. **Start Timer**: Press `Space` to start your 25-minute work session
+4. **See Progress**: The timer shows "📋 [Your Task Name]" so you know what you're working on
+5. **Take Breaks**: After completion, you'll hear a notification. Press `N` to start a break
+6. **Track Stats**: Press `S` anytime to view statistics and productivity trends
+7. **Persistence**: Your selected task is remembered when you restart the app
+8. **Customize**: Press `Ctrl+\` for themes, `M` to toggle sound
 
 ## 📊 Statistics & Reports
 

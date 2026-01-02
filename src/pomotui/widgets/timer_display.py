@@ -14,6 +14,7 @@ class TimerDisplay(Widget):
 
     time_text = reactive("25:00")
     session_text = reactive("Ready to focus")
+    task_text = reactive("")
     progress_value = reactive(0.0)
     pomodoros_completed = reactive(0)
 
@@ -35,6 +36,12 @@ class TimerDisplay(Widget):
         text-align: center;
         text-style: bold;
         color: $accent;
+        margin-bottom: 1;
+    }
+
+    TimerDisplay .task-name {
+        text-align: center;
+        color: $text;
         margin-bottom: 1;
     }
 
@@ -69,6 +76,7 @@ class TimerDisplay(Widget):
         """Compose the timer display."""
         with Container():
             yield Static(self.session_text, classes="session-type")
+            yield Static(self.task_text, classes="task-name", id="task-name-display")
             yield Label(self.time_text, classes="timer-text timer-digits")
             yield ProgressBar(total=100, show_eta=False)
             yield Static(
@@ -115,12 +123,22 @@ class TimerDisplay(Widget):
             # Widget not yet composed
             pass
 
+    def watch_task_text(self, new_text: str) -> None:
+        """Update task name when it changes."""
+        try:
+            static = self.query_one("#task-name-display", Static)
+            static.update(new_text)
+        except Exception:
+            # Widget not yet composed
+            pass
+
     def update_timer(
         self,
         time_str: str,
         state: TimerState,
         progress: float,
         pomodoros: int,
+        task_name: str = "",
     ) -> None:
         """Update all timer display values.
 
@@ -129,10 +147,17 @@ class TimerDisplay(Widget):
             state: Current timer state
             progress: Progress percentage (0-100)
             pomodoros: Number of completed pomodoros
+            task_name: Name of the current task (optional)
         """
         self.time_text = time_str
         self.progress_value = progress
         self.pomodoros_completed = pomodoros
+
+        # Update task display
+        if task_name:
+            self.task_text = f"📋 {task_name}"
+        else:
+            self.task_text = ""
 
         # Update session text based on state
         if state == TimerState.IDLE:

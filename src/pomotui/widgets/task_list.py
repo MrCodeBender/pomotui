@@ -2,8 +2,10 @@
 
 from typing import List
 
+from textual import events
 from textual.app import ComposeResult
 from textual.containers import Container, VerticalScroll
+from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Button, Label, Static
@@ -25,6 +27,7 @@ class TaskItem(Static):
     TaskItem:hover {
         border: solid $accent;
         background: $panel-lighten-1;
+        cursor: pointer;
     }
 
     TaskItem.selected {
@@ -42,6 +45,18 @@ class TaskItem(Static):
     }
     """
 
+    class Selected(Message):
+        """Message sent when a task item is selected."""
+
+        def __init__(self, task: Task) -> None:
+            """Initialize the message.
+
+            Args:
+                task: The selected task
+            """
+            super().__init__()
+            self.task = task
+
     def __init__(self, task: Task, is_selected: bool = False) -> None:
         """Initialize task item.
 
@@ -50,20 +65,25 @@ class TaskItem(Static):
             is_selected: Whether this task is currently selected
         """
         super().__init__()
-        self.task = task
+        self._task_data = task
         self.is_selected = is_selected
         if is_selected:
             self.add_class("selected")
 
     def compose(self) -> ComposeResult:
         """Compose the task item."""
-        status = "✓" if self.task.is_completed else "○"
-        yield Label(f"{status} {self.task.name}", classes="task-name")
-        if self.task.description:
-            yield Static(self.task.description)
+        status = "✓" if self._task_data.is_completed else "○"
+        yield Label(f"{status} {self._task_data.name}", classes="task-name")
+        if self._task_data.description:
+            yield Static(self._task_data.description)
         yield Static(
-            f"🍅 {self.task.pomodoro_count} pomodoros", classes="task-info"
+            f"🍅 {self._task_data.pomodoro_count} pomodoros", classes="task-info"
         )
+
+    def on_click(self, event: events.Click) -> None:
+        """Handle click event."""
+        event.stop()
+        self.post_message(self.Selected(self._task_data))
 
 
 class TaskList(Widget):
@@ -153,7 +173,7 @@ class TaskList(Widget):
             # Widget not yet composed, skip update
             pass
 
-    def on_task_item_click(self, event) -> None:
-        """Handle task item click."""
-        # This will be handled by the parent app
-        pass
+    def on_task_item_selected(self, message: TaskItem.Selected) -> None:
+        """Handle task item selection."""
+        # Update selected task ID
+        self.selected_task_id = message.task.id

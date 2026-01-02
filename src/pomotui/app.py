@@ -13,6 +13,7 @@ from pomotui.notifications import SoundNotificationManager
 from pomotui.screens import TaskScreen, StatsScreen
 from pomotui.timer import PomodoroTimer, TimerState, SessionType
 from pomotui.widgets import TimerDisplay, TaskList
+from pomotui.widgets.task_list import TaskItem
 
 
 class PomodoroApp(App):
@@ -87,10 +88,12 @@ class PomodoroApp(App):
         """Set up the app when mounted."""
         # Set up periodic timer tick
         self.set_interval(1.0, self._tick_callback)
-        # Update display with initial state
-        self._update_display()
+        # Load current task
+        self._load_current_task()
         # Load tasks
         self._load_tasks()
+        # Update display with initial state
+        self._update_display()
 
     def action_toggle_timer(self) -> None:
         """Toggle timer between running and paused."""
@@ -119,10 +122,12 @@ class PomodoroApp(App):
                 name=screen.task_name, description=screen.task_description
             )
             self.notify(f"Task '{task.name}' created!", severity="information")
-            self._load_tasks()
             # Automatically select the new task
             self.current_task = task
             self.timer.set_current_task(task.id)
+            self._save_current_task()
+            self._load_tasks()
+            self._update_display()
 
     def action_show_stats(self) -> None:
         """Show statistics screen."""
@@ -192,11 +197,15 @@ class PomodoroApp(App):
         remaining = self.timer.time_remaining
         progress = 0.0 if total == 0 else ((total - remaining) / total) * 100
 
+        # Get current task name
+        task_name = self.current_task.name if self.current_task else ""
+
         timer_display.update_timer(
             time_str=self.timer.format_time(),
             state=self.timer.state,
             progress=progress,
             pomodoros=self.timer.completed_pomodoros,
+            task_name=task_name,
         )
 
     def _load_tasks(self) -> None:
@@ -239,6 +248,36 @@ class PomodoroApp(App):
             self.sound_manager.enable()
             self.notify("Sound notifications enabled", severity="information")
         self._save_sound_preference()
+
+    def on_task_item_selected(self, message: TaskItem.Selected) -> None:
+        """Handle task selection from task list."""
+        self.current_task = message.task
+        self.timer.set_current_task(message.task.id)
+        self._save_current_task()
+        self._load_tasks()  # Reload to update selection visual
+        self._update_display()
+        self.notify(f"Selected task: {message.task.name}", severity="information")
+
+    def _load_current_task(self) -> None:
+        """Load current task from database."""
+        task_id_str = self.db.get_setting("current_task_id")
+        if task_id_str:
+            try:
+                task_id = int(task_id_str)
+                task = self.db.get_task(task_id)
+                if task:
+                    self.current_task = task
+                    self.timer.set_current_task(task_id)
+            except (ValueError, TypeError):
+                # Invalid task ID in settings
+                pass
+
+    def _save_current_task(self) -> None:
+        """Save current task to database."""
+        if self.current_task and self.current_task.id:
+            self.db.set_setting("current_task_id", str(self.current_task.id))
+        else:
+            self.db.set_setting("current_task_id", "")
 
 
 if __name__ == "__main__":
