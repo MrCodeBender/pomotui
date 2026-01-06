@@ -10,7 +10,7 @@ from textual.widgets import Header, Footer
 from pomotui.database import DatabaseManager
 from pomotui.models import TimerConfig, Task
 from pomotui.notifications import SoundNotificationManager
-from pomotui.screens import TaskScreen, StatsScreen
+from pomotui.screens import TaskScreen, TaskEditScreen, StatsScreen, ConfirmDialog
 from pomotui.timer import PomodoroTimer, TimerState, SessionType
 from pomotui.widgets import TimerDisplay, TaskList
 from pomotui.widgets.task_list import TaskItem
@@ -44,6 +44,8 @@ class PomodoroApp(App):
         ("r", "reset_timer", "Reset"),
         ("n", "next_session", "Next Session"),
         ("t", "new_task", "New Task"),
+        ("e", "edit_task", "Edit Task"),
+        ("d", "delete_task", "Delete Task"),
         ("s", "show_stats", "Statistics"),
         ("m", "toggle_sound", "Toggle Sound"),
         ("q", "quit", "Quit"),
@@ -126,6 +128,64 @@ class PomodoroApp(App):
             self.current_task = task
             self.timer.set_current_task(task.id)
             self._save_current_task()
+            self._load_tasks()
+            self._update_display()
+
+    @work
+    async def action_edit_task(self) -> None:
+        """Edit the current task."""
+        if not self.current_task:
+            self.notify("No task selected. Click a task to select it.", severity="warning")
+            return
+
+        screen = TaskEditScreen(self.current_task)
+        result = await self.push_screen(screen, wait_for_dismiss=True)
+
+        if result:
+            # Update task object with new values
+            self.current_task.name = screen.task_name
+            self.current_task.description = screen.task_description
+
+            # Handle completion status
+            if screen.should_complete and not self.current_task.is_completed:
+                self.current_task.complete()
+            elif not screen.should_complete and self.current_task.is_completed:
+                self.current_task.uncomplete()
+
+            # Update in database
+            self.db.update_task(self.current_task)
+
+            self.notify(f"Task '{self.current_task.name}' updated!", severity="information")
+            self._load_tasks()
+            self._update_display()
+
+    @work
+    async def action_delete_task(self) -> None:
+        """Delete the current task."""
+        if not self.current_task:
+            self.notify("No task selected. Click a task to select it.", severity="warning")
+            return
+
+        # Show confirmation dialog
+        task_name = self.current_task.name
+        dialog = ConfirmDialog(
+            title="Delete Task",
+            message=f"Are you sure you want to delete '{task_name}'?\nThis will also delete all associated sessions."
+        )
+        result = await self.push_screen(dialog, wait_for_dismiss=True)
+
+        if result:
+            task_id = self.current_task.id
+            # Delete from database
+            self.db.delete_task(task_id)
+
+            # Clear current task if it was deleted
+            if self.current_task.id == task_id:
+                self.current_task = None
+                self.timer.set_current_task(None)
+                self._save_current_task()
+
+            self.notify(f"Task '{task_name}' deleted.", severity="information")
             self._load_tasks()
             self._update_display()
 

@@ -5,7 +5,9 @@ A modern, feature-rich Pomodoro timer for the terminal, built with [Textual](htt
 ## ✨ Features
 
 - **⏱️ Full Pomodoro Timer**: Classic 25/5/15 minute work/break cycles with visual progress
-- **📋 Task Management**: Create, select, and track tasks with click-to-select interface
+- **📋 Full Task CRUD**: Create, read, update, delete, and select tasks with click-to-select interface
+- **✏️ Task Editing**: Edit task names, descriptions, and mark tasks as completed
+- **🗑️ Task Deletion**: Delete tasks with confirmation dialog (cascades to sessions)
 - **👁️ Active Task Display**: See which task you're working on during focus sessions
 - **💾 Task Persistence**: Your selected task is remembered across app restarts
 - **📊 Statistics & Reports**: Detailed daily, weekly, and monthly productivity analytics
@@ -14,7 +16,7 @@ A modern, feature-rich Pomodoro timer for the terminal, built with [Textual](htt
 - **🔔 Sound Notifications**: Terminal bell notifications for session completion (toggle on/off)
 - **⌨️ Keyboard-Driven**: Efficient keyboard shortcuts for all actions
 - **🗂️ SQLite Storage**: Reliable local database for all your data
-- **🧪 Well-Tested**: 70 tests ensuring reliability
+- **🧪 Well-Tested**: 77 tests ensuring reliability
 
 ## 📸 Preview
 
@@ -86,6 +88,8 @@ pomotui
 | `R` | Reset | Reset the timer to its initial state |
 | `N` | Next Session | Skip to the next session (work → break → work) |
 | `T` | New Task | Open the task creation dialog |
+| `E` | Edit Task | Edit the currently selected task |
+| `D` | Delete Task | Delete the currently selected task (with confirmation) |
 | `S` | Statistics | View your productivity statistics |
 | `M` | Toggle Sound | Enable or disable sound notifications |
 | `Ctrl+\` | Command Palette | Open Textual's command palette (theme selection, etc.) |
@@ -99,9 +103,11 @@ pomotui
 3. **Start Timer**: Press `Space` to start your 25-minute work session
 4. **See Progress**: The timer shows "📋 [Your Task Name]" so you know what you're working on
 5. **Take Breaks**: After completion, you'll hear a notification. Press `N` to start a break
-6. **Track Stats**: Press `S` anytime to view statistics and productivity trends
-7. **Persistence**: Your selected task is remembered when you restart the app
-8. **Customize**: Press `Ctrl+\` for themes, `M` to toggle sound
+6. **Edit Tasks**: Press `E` to edit the selected task's name, description, or mark it complete
+7. **Delete Tasks**: Press `D` to delete the selected task (with confirmation)
+8. **Track Stats**: Press `S` anytime to view statistics and productivity trends
+9. **Persistence**: Your selected task is remembered when you restart the app
+10. **Customize**: Press `Ctrl+\` for themes, `M` to toggle sound
 
 ## 📊 Statistics & Reports
 
@@ -246,9 +252,9 @@ Please ensure:
 - [x] Data export (CSV/JSON)
 - [x] Theme persistence
 - [x] Sound notifications (terminal bell)
-- [x] Comprehensive test coverage (67 tests)
+- [x] Task editing and deletion
+- [x] Comprehensive test coverage (77 tests)
 - [ ] Custom timer durations (UI for configuration)
-- [ ] Task editing and deletion
 - [ ] More detailed task analytics
 - [ ] Calendar view
 
